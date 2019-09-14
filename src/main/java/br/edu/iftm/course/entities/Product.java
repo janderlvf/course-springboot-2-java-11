@@ -44,7 +44,7 @@ public class Product implements Serializable {
 
 	public Product(Long id, String name, String description, Double price, String imgUrl) {
 		super();
-		id = id;
+		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.price = price;
@@ -56,7 +56,7 @@ public class Product implements Serializable {
 	}
 
 	public void setId(Long id) {
-		id = id;
+		this.id = id;
 	}
 
 	public String getName() {
