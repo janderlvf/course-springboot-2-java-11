@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import br.edu.iftm.course.entities.Category;
+import br.edu.iftm.course.dto.CategoryDTO;
+import br.edu.iftm.course.dto.CategoryInsertDTO;
+
 import br.edu.iftm.course.services.CategoryService;
 
 @RestController
@@ -25,28 +27,31 @@ public class CategoryResourse {
 	@Autowired
 	private CategoryService service;
 	
+	
 	@GetMapping
-	public ResponseEntity<List<Category>>findAll(){
+	public ResponseEntity<List<CategoryDTO>>findAll(){
 		
-		List<Category> list = service.findAll();
+		List<CategoryDTO> list = service.findAll();
 		return ResponseEntity.ok().body(list);
 	}
 	
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Category> findById(@PathVariable Long id){
+	public ResponseEntity<CategoryDTO> findById(@PathVariable Long id){
 		
-		Category obj = service.findById(id);
-		return ResponseEntity.ok().body(obj);
+		CategoryDTO dto = service.findById(id);
+		return ResponseEntity.ok().body(dto);
 	}
 	
+	
 	@PostMapping
-	public ResponseEntity<Category> insert(@RequestBody Category obj){		
-		obj = service.insert(obj);
+	public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryInsertDTO dto){		
+		CategoryDTO newDto = service.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(obj.getId()).toUri();
-		return ResponseEntity.created(uri).body(obj);
+				.buildAndExpand(newDto.getId()).toUri();
+		return ResponseEntity.created(uri).body(newDto);
 		
 	}
+
 	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id){
@@ -55,11 +60,14 @@ public class CategoryResourse {
 		return ResponseEntity.noContent().build();
 	}
 	
+	
+	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<Category> update(@PathVariable Long id, @RequestBody Category obj){
+	public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody CategoryDTO dto){
 		
-		obj = service.update(id, obj);
-		return ResponseEntity.ok().body(obj);
+		dto = service.update(id, dto);
+		return ResponseEntity.ok().body(dto);
 	}
+	
 
 }
