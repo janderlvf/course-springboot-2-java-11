@@ -23,7 +23,7 @@ public class UserInsertDTO implements Serializable {
 	private String email;
 	
 	@NotEmpty(message = "can' be empty")
-	@Length(min = 8 , max = 20, message = "length must be between 5 and 80")
+	@Length(min = 8 , max = 20, message = "length must be between 5 and 20")
 	private String phone;
 	
 	@NotEmpty(message = "can' be empty")
