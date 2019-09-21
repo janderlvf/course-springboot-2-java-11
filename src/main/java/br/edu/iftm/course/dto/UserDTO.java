@@ -2,14 +2,29 @@ package br.edu.iftm.course.dto;
 
 import java.io.Serializable;
 
-import br.edu.iftm.course.entities.User;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.validator.constraints.Length;
+
+import br.edu.iftm.course.entities.User;
+import br.edu.iftm.course.services.validation.UserUpdateValid;
+
+@UserUpdateValid
 public class UserDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Long id;
+	@NotEmpty(message = "can' be empty")
+	@Length(min = 5 , max = 80, message = "length must be between 5 and 80")
 	private String name;
+	
+	@NotEmpty(message = "can' be empty")
+	@Email(message = "ivalid email")
 	private String email;
+	
+	@NotEmpty(message = "can' be empty")
+	@Length(min = 8 , max = 20, message = "length must be between 5 and 20")
 	private String phone;
 	
 	public UserDTO() {
