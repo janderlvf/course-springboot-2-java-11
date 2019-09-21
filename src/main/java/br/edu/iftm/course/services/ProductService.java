@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import br.edu.iftm.course.entities.Category;
 import br.edu.iftm.course.entities.Product;
 import br.edu.iftm.course.repositories.CategoryRepository;
 import br.edu.iftm.course.repositories.ProductRepository;
+import br.edu.iftm.course.services.exceptions.DatabaseException;
 import br.edu.iftm.course.services.exceptions.ResourceNotFoundException;
 	
 	@Service
@@ -65,6 +68,17 @@ import br.edu.iftm.course.services.exceptions.ResourceNotFoundException;
 			throw new ResourceNotFoundException(id);
 		}
 	}
+	
+	
+	public void delete(Long id) {		
+		try {		
+		repository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {			
+			throw new ResourceNotFoundException(id);
+		}catch (DataIntegrityViolationException e) {	
+			throw new DatabaseException(e.getMessage());
+		}
+}
 
 	private void updateData(Product entity, ProductCategoriesDTO dto) {
 
@@ -77,15 +91,14 @@ import br.edu.iftm.course.services.exceptions.ResourceNotFoundException;
 		}
 	
 	}
-	private void SetProductCategories(Product entity, List<CategoryDTO> categories) {
-		
+	private void SetProductCategories(Product entity, List<CategoryDTO> categories) {		
 		entity.getCategories().clear();
-		for(CategoryDTO dto : categories) {
-			
+		for(CategoryDTO dto : categories) {			
 			Category category = categoryRepository.getOne(dto.getId());
-			entity.getCategories().add(category);
-			
+			entity.getCategories().add(category);			
 		}		
 	}
+	
+	
 	
 	}
