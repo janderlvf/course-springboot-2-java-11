@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.iftm.course.dto.CategoryDTO;
-import br.edu.iftm.course.dto.CategoryInsertDTO;
-
 import br.edu.iftm.course.entities.Category;
 import br.edu.iftm.course.repositories.CategoryRepository;
 import br.edu.iftm.course.services.exceptions.DatabaseException;
@@ -41,7 +39,7 @@ public class CategoryService {
 		
 	}
 	
-	public CategoryDTO insert(CategoryInsertDTO dto) {
+	public CategoryDTO insert(CategoryDTO dto) {
 				
 				Category entity = dto.toEntity();
 				 entity = repository.save(entity);
