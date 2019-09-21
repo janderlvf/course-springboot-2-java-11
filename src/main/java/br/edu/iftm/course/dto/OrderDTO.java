@@ -5,6 +5,8 @@ import java.time.Instant;
 
 import org.dom4j.IllegalAddException;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import br.edu.iftm.course.entities.Order;
 import br.edu.iftm.course.entities.User;
 import br.edu.iftm.course.entities.enums.OrderStatus;
@@ -14,6 +16,8 @@ public class OrderDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Long id;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
 	private Instant moment;	
 	private OrderStatus orderStatus;
 	private Long clientId;
