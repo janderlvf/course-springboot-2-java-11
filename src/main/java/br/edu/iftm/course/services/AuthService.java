@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.iftm.course.dto.CredentialsDTO;
 import br.edu.iftm.course.dto.TokenDTO;
+import br.edu.iftm.course.entities.Order;
 import br.edu.iftm.course.entities.User;
 import br.edu.iftm.course.repositories.UserRepository;
 import br.edu.iftm.course.security.JWTUtil;
@@ -63,6 +64,16 @@ public class AuthService {
 
 		User user = authenticated();
 		if (user == null || (!user.getId().equals(userId)) && !user.hasRole("ROLE_ADMIN")) {
+			throw new JWTAuthorizationException("Acess denied");
+
+		}
+
+	}
+	
+	public void validateOwnOrderOrAdmin(Order order) {
+
+		User user = authenticated();
+		if (user == null || (!user.getId().equals(order.getClient().getId())) && !user.hasRole("ROLE_ADMIN")) {
 			throw new JWTAuthorizationException("Acess denied");
 
 		}
