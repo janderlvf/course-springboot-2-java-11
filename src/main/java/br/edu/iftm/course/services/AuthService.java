@@ -79,5 +79,12 @@ public class AuthService {
 		}
 
 	}
+	
+	public TokenDTO refreschToken() {
+		
+		User user = authenticated();
+		return new TokenDTO(user.getEmail(), jwtUtil.generateToken(user.getEmail()));
+		
+	}
 
 }

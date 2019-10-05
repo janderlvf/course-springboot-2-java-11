@@ -26,4 +26,14 @@ public class AuthResource {
 		return ResponseEntity.ok().body(tokenDTO);		
 	}
 
+
+
+
+@PostMapping("/refresh")
+public ResponseEntity<TokenDTO> refresh(){		
+	
+	TokenDTO tokenDTO =  service.refreschToken();
+	return ResponseEntity.ok().body(tokenDTO);		
+}
+
 }
