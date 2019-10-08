@@ -2,6 +2,7 @@ package br.edu.iftm.course.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -14,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.edu.iftm.course.dto.CategoryDTO;
 import br.edu.iftm.course.entities.Category;
+import br.edu.iftm.course.entities.Product;
 import br.edu.iftm.course.repositories.CategoryRepository;
+import br.edu.iftm.course.repositories.ProductRepository;
 import br.edu.iftm.course.services.exceptions.DatabaseException;
 import br.edu.iftm.course.services.exceptions.ResourceNotFoundException;
 
@@ -23,6 +26,9 @@ public class CategoryService {
 	
 	@Autowired
 	private CategoryRepository repository;
+	
+	@Autowired
+	private ProductRepository productRepository;
 	
 	public List<CategoryDTO> findAll(){
 		
@@ -74,6 +80,16 @@ public class CategoryService {
 
 		entity.setName(dto.getName());
 		
+	}
+
+	@Transactional(readOnly = true)
+	public List<CategoryDTO> findByProduct(Long productId) {
+		
+		Product product = productRepository.getOne(productId);
+		
+		Set<Category> set = product.getCategories();
+		
+		return set.stream().map(e -> new CategoryDTO(e)).collect(Collectors.toList());
 	}
 
 }
