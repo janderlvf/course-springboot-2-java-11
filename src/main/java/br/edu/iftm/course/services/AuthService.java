@@ -1,11 +1,17 @@
 package br.edu.iftm.course.services;
 
+import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.spi.LoggerFactoryBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +23,14 @@ import br.edu.iftm.course.repositories.UserRepository;
 import br.edu.iftm.course.security.JWTUtil;
 import br.edu.iftm.course.services.exceptions.JWTAuthenticationException;
 import br.edu.iftm.course.services.exceptions.JWTAuthorizationException;
+import br.edu.iftm.course.services.exceptions.ResourceNotFoundException;
+
 
 @Service
 public class AuthService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AuthService.class);
+	
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -27,6 +38,9 @@ public class AuthService {
 	@Autowired
 	private JWTUtil jwtUtil;
 
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
 	@Autowired
 	private UserRepository UserRepository;
 
@@ -87,4 +101,51 @@ public class AuthService {
 		
 	}
 
+	@Transactional
+	public void sendNewPassword(String email) {
+		
+		User user = UserRepository.findByEmail(email);
+		
+		if(user == null) {
+			
+			throw new ResourceNotFoundException("Email not found");			
+		}
+		
+		String newPass = newPassword();
+		System.out.println("teste---------------: "+newPass);
+		user.setPassword(passwordEncoder.encode(newPass));
+		
+		UserRepository.save(user);
+		LOG.info("New password: "+ newPass);
+		System.out.println("New password: "+newPass);
+	}
+	
+	
+	private String newPassword() {
+
+		char[] vect = new char[10];
+		for (int i = 0; i < 10; i++) {
+			vect[i] = randomChar();
+		}
+		
+		
+		return new String(vect);
+
+	}
+		
+		private char randomChar() {
+			Random rand = new Random();
+			int opt = rand.nextInt(3);
+			if(opt == 0) {
+				return (char) (rand.nextInt(10) + 48);
+			}
+			else if(opt == 1){
+				return (char) (rand.nextInt(26) + 65);
+			}
+			else {				
+				return (char) (rand.nextInt(26) + 97);
+			}
+			
+		}
+	
 }
