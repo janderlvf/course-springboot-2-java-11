@@ -15,38 +15,41 @@ import br.edu.iftm.course.entities.Order;
 import br.edu.iftm.course.entities.OrderItem;
 import br.edu.iftm.course.entities.User;
 import br.edu.iftm.course.repositories.OrderRepository;
+import br.edu.iftm.course.repositories.UserRepository;
 import br.edu.iftm.course.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class OrderService {
-	
+
 	@Autowired
 	private OrderRepository repository;
-	
+
+	@Autowired
+	private UserRepository userRepository;
+
 	@Autowired
 	private AuthService authService;
-	
-	public List<OrderDTO> findAll(){
+
+	public List<OrderDTO> findAll() {
 		List<Order> list = repository.findAll();
 		return list.stream().map(e -> new OrderDTO(e)).collect(Collectors.toList());
-		
+
 	}
-	
+
 	public OrderDTO findById(Long id) {
-		
+
 		Optional<Order> obj = repository.findById(id);
 		Order entity = obj.orElseThrow(() -> new ResourceNotFoundException(id));
 		authService.validateOwnOrderOrAdmin(entity);
 		return new OrderDTO(entity);
 	}
-	
+
 	public List<OrderDTO> findByClient() {
-		
+
 		User client = authService.authenticated();
 		List<Order> list = repository.findByClient(client);
-		return list.stream().map (e -> new OrderDTO(e)).collect(Collectors.toList());
-		
-		
+		return list.stream().map(e -> new OrderDTO(e)).collect(Collectors.toList());
+
 	}
 
 	@Transactional(readOnly = true)
@@ -54,10 +57,15 @@ public class OrderService {
 		Order order = repository.getOne(id);
 		authService.validateOwnOrderOrAdmin(order);
 		Set<OrderItem> set = order.getItems();
-		
+
 		return set.stream().map(e -> new OrderItemDTO(e)).collect(Collectors.toList());
 	}
-	
-	
+
+	@Transactional(readOnly = true)
+	public List<OrderDTO> findByClientId(Long clientId) {
+		User client = userRepository.getOne(clientId);
+		List<Order> list = repository.findByClient(client);
+		return list.stream().map(e -> new OrderDTO(e)).collect(Collectors.toList());
+	}
 
 }
