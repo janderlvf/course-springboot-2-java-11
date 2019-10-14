@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import br.edu.iftm.course.services.exceptions.DatabaseException;
 import br.edu.iftm.course.services.exceptions.JWTAuthenticationException;
 import br.edu.iftm.course.services.exceptions.JWTAuthorizationException;
+import br.edu.iftm.course.services.exceptions.ParamFormatException;
 import br.edu.iftm.course.services.exceptions.ResourceNotFoundException;
 
 @ControllerAdvice
@@ -72,6 +73,15 @@ public class ResourceExceptionHandler {
 		return ResponseEntity.status(status).body(err);
 		
 	
+	}
+	@ExceptionHandler(ParamFormatException.class)
+	public ResponseEntity<StandardError> paramFormat(ParamFormatException e, HttpServletRequest request ){
+		
+		String error = "Format error";
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		StandardError err = new StandardError(Instant.now(),status.value(), error, e.getMessage(), request.getRequestURI());
+		return ResponseEntity.status(status).body(err);
+		
 	}
 
 }
