@@ -1,5 +1,6 @@
 package br.edu.iftm.course.services;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -13,8 +14,12 @@ import br.edu.iftm.course.dto.OrderDTO;
 import br.edu.iftm.course.dto.OrderItemDTO;
 import br.edu.iftm.course.entities.Order;
 import br.edu.iftm.course.entities.OrderItem;
+import br.edu.iftm.course.entities.Product;
 import br.edu.iftm.course.entities.User;
+import br.edu.iftm.course.entities.enums.OrderStatus;
+import br.edu.iftm.course.repositories.OrderItemRepository;
 import br.edu.iftm.course.repositories.OrderRepository;
+import br.edu.iftm.course.repositories.ProductRepository;
 import br.edu.iftm.course.repositories.UserRepository;
 import br.edu.iftm.course.services.exceptions.ResourceNotFoundException;
 
@@ -26,6 +31,13 @@ public class OrderService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private ProductRepository productRepository;
+	
+	@Autowired
+	private OrderItemRepository orderItemRepository;
+
 
 	@Autowired
 	private AuthService authService;
@@ -66,6 +78,24 @@ public class OrderService {
 		User client = userRepository.getOne(clientId);
 		List<Order> list = repository.findByClient(client);
 		return list.stream().map(e -> new OrderDTO(e)).collect(Collectors.toList());
+	}
+
+	@Transactional
+	public OrderDTO placeOrder(List<OrderItemDTO> dto) {
+		
+		User client = authService.authenticated();
+		Order order = new Order(null, Instant.now(), OrderStatus.WAITTING_PAYMENT, client);
+		
+		for(OrderItemDTO itemDTO : dto) {			
+			Product product = productRepository.getOne(itemDTO.getProductId());
+			OrderItem item = new OrderItem(order,product, itemDTO.getQuantity(), itemDTO.getPrice());
+			order.getItems().add(item);
+		}
+		repository.save(order);
+		orderItemRepository.saveAll(order.getItems());
+		return new OrderDTO(order);
+		
+	
 	}
 
 }
