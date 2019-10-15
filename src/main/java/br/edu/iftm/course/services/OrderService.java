@@ -6,12 +6,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.edu.iftm.course.dto.CategoryDTO;
 import br.edu.iftm.course.dto.OrderDTO;
 import br.edu.iftm.course.dto.OrderItemDTO;
+import br.edu.iftm.course.entities.Category;
 import br.edu.iftm.course.entities.Order;
 import br.edu.iftm.course.entities.OrderItem;
 import br.edu.iftm.course.entities.Product;
@@ -96,6 +100,23 @@ public class OrderService {
 		return new OrderDTO(order);
 		
 	
+	}
+	
+	@Transactional
+	public OrderDTO update(Long id, OrderDTO dto) {		
+		try {
+			Order entity = repository.getOne(id);
+			updateData(entity,dto);
+			entity =  repository.save(entity);
+			return new OrderDTO(entity);
+		}catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
+	}
+	
+	private void updateData(Order entity, OrderDTO dto) {
+
+		entity.setOrderStatus(dto.getOrderStatus());
 	}
 
 }
